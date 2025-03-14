@@ -21,3 +21,4 @@ yarn-error.log
 docker-compose.override.yml
 /.docker
 /.env.docker
+storage/database/
