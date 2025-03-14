@@ -11,8 +11,8 @@ return new class extends Migration
     {
         Schema::create('viagens', function (Blueprint $table){
             $table->id();
-            $table->foreignId('veiculo_id')->constrained('veiculos')->onDelete('cascade');
-            $table->foreignId('motorista_id')->constrained('motoristas')->onDelete('cascade');
+            $table->foreignId('veiculo_id')->constrained('veiculos')->onDelete('restrict');
+            $table->foreignId('motorista_id')->constrained('motoristas')->onDelete('restrict');
             $table->bigInteger('km_inicio');
             $table->bigInteger('km_fim');
             $table->dateTime('data_hora_inicio');
