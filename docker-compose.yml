@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: entrevista_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: entrevista
+    ports:
+      - "5432:5432"
+    networks:
+      - genesis_network
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./storage/database:/var/lib/postgresql/data
+  app:
+    build: .
+    container_name: genesis_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - genesis_network
+    depends_on:
+      - postgres
+
+  web:
+    image: nginx:latest
+    container_name: genesis_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - genesis_network
+    depends_on:
+      - app
+networks:
+  genesis_network:
+    driver: bridge
