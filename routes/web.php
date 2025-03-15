@@ -5,8 +5,9 @@ use App\Http\Controllers\ViagemController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+Route::get('/', [ViagemController::class, 'viagensDoDia']);
 
 
 Route::get('/veiculos', [VeiculoController::class, 'index'])->name('veiculos.index');

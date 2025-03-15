@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use App\Models\Viagem;
 use Illuminate\Http\Request;
 
@@ -11,6 +11,11 @@ class ViagemController extends Controller
     {
         $viagens = Viagem::all();
         return view('viagens.index', compact('viagens'));
+    }
+
+    public function viagensDoDia(){
+        $viagens = Viagem::whereDate('data_hora_inicio', Carbon::today())->get();
+        return view('home', compact('viagens'));
     }
     public function store(Request $request)
     {
