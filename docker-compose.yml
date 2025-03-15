@@ -13,6 +13,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./storage/database:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -h localhost" ]
+      interval: 5s
+      retries: 5
+      timeout: 3s
   app:
     build: .
     container_name: genesis_app
@@ -20,10 +25,13 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
+      - /var/www/html/vendor/
+
     networks:
       - genesis_network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   web:
     image: nginx:latest

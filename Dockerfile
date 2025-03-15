@@ -14,11 +14,12 @@ WORKDIR /var/www/html
 
 COPY . .
 
-RUN composer install --optimize-autoloader
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
 
 RUN chown -R www-data:www-data /var/www/html/storage
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
 
 EXPOSE 9000
 
-CMD ["sh", "-c", "php artisan migrate --force && php-fpm"]
+CMD ["sh", "-c", "cp .env.example .env && php artisan key:generate && php artisan migrate --force || true && php-fpm"]
