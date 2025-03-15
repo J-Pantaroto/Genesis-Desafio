@@ -15,9 +15,9 @@ services:
       - ./storage/database:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -h localhost" ]
-      interval: 5s
-      retries: 5
-      timeout: 3s
+      interval: 10s
+      retries: 10
+      timeout: 5s
   app:
     build: .
     container_name: genesis_app
