@@ -76,7 +76,7 @@ class ViagemController extends Controller
             $query->where('status', 'EM ANDAMENTO');
         })->get();
         if ($viagem->status !== 'AGUARDANDO INICIO') {
-            return response()->json(['error' => 'Apenas viagens "AGUARDANDO INICIO" podem ser editadas.']);
+            return response()->json(['error' => 'Apenas viagens "AGUARDANDO INICIO" podem ser editadas.'],422);
         }
         return view('viagens.edit', compact('veiculosDisponiveis', 'motoristasDisponiveis', 'viagem'));
     }

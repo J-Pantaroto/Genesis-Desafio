@@ -5,40 +5,41 @@
         <div class="d-flex justify-content-between align-items-center">
             <a href="{{ route('motoristas.create') }}" class="btn btn-primary">Novo Motorista</a>
         </div>
-
-        <table class="table table-striped mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th class="text-center" scope="col">ID</th>
-                    <th class="text-center" scope="col">Nome</th>
-                    <th class="text-center" scope="col">Data de nascimento</th>
-                    <th class="text-center" scope="col">CNH</th>
-                    <th class="text-center" scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if ($motoristas->isEmpty())
+        <div class="table-responsive">
+            <table class="table table-striped mt-3">
+                <thead class="table-dark">
                     <tr>
-                        <td colspan="6" class="text-center">Nenhum motorista cadastrado!</td>
+                        <th class="text-center" scope="col">ID</th>
+                        <th class="text-center" scope="col">Nome</th>
+                        <th class="text-center" scope="col">Data de nascimento</th>
+                        <th class="text-center" scope="col">CNH</th>
+                        <th class="text-center" scope="col">Ações</th>
                     </tr>
-                @else
-                    @foreach ($motoristas as $motorista)
+                </thead>
+                <tbody>
+                    @if ($motoristas->isEmpty())
                         <tr>
-                            <th id="motoristaId" scope="row">{{ $motorista->id }}</th>
-                            <td>{{ $motorista->nome }}</td>
-                            <td>{{ $motorista->data_nascimento }}</td>
-                            <td>{{ $motorista->cnh }}</td>
-                            <td>
-                                <a href="{{ route('motoristas.edit', $motorista->id) }}"
-                                    class="btn btn-warning btn-sm">Editar</a>
-                                <button class="btn btn-danger btn-sm delete-btn"
-                                    data-id="{{ $motorista->id }}">Excluir</button>
-                            </td>
+                            <td colspan="6" class="text-center">Nenhum motorista cadastrado!</td>
                         </tr>
-                    @endforeach
-                @endif
-            </tbody>
-        </table>
+                    @else
+                        @foreach ($motoristas as $motorista)
+                            <tr>
+                                <th class="text-center" id="motoristaId" scope="row">{{ $motorista->id }}</th>
+                                <td class="text-center">{{ $motorista->nome }}</td>
+                                <td class="text-center">{{ $motorista->data_nascimento }}</td>
+                                <td class="text-center">{{ $motorista->cnh }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('motoristas.edit', $motorista->id) }}"
+                                        class="btn btn-warning btn-sm"><i class="fas fa-edit"></i>Editar</a>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $motorista->id }}"><i
+                                            class="fa-solid fa-trash fa-lg"></i></button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

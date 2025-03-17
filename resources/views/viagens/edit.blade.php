@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         crossorigin="anonymous">
     <title>Editar Viagem</title>
@@ -69,54 +70,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/viagens.js') }}"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let veiculoSelect = document.getElementById("veiculo");
-            let kmInicioInput = document.getElementById("km_inicio");
-
-            veiculoSelect.addEventListener("change", function () {
-                let selectedOption = this.options[this.selectedIndex];
-                let kmAtual = selectedOption.getAttribute("data-km");
-                kmInicioInput.value = kmAtual ? kmAtual : "";
-            });
-
-            document.getElementById("viagemForm").addEventListener("submit", function (event) {
-                event.preventDefault();
-
-                let formData = new FormData(this);
-                formData.append("_method", "PUT");
-
-                fetch("{{ route('viagens.update', $viagem->id) }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    body: formData
-                })
-                .then(response => response.json().then(data => ({
-                    status: response.status,
-                    body: data
-                })))
-                .then(({ status, body }) => {
-                    if (status === 200) {
-                        Swal.fire("Sucesso!", body.success, "success").then(() => {
-                            window.location.href = "{{ route('viagens.index') }}";
-                        });
-                    } else if (status === 422) {
-                        let errorMessage = Object.values(body.errors).flat().join('<br>');
-                        Swal.fire("Erro de Validação", errorMessage, "error");
-                    } else {
-                        Swal.fire("Erro!", body.error || "Ocorreu um problema ao atualizar a viagem.", "error");
-                    }
-                })
-                .catch(() => {
-                    Swal.fire("Erro!", "Ocorreu um problema ao atualizar a viagem.", "error");
-                });
-            });
-        });
-    </script>
-
+   
 </body>
 
 </html>

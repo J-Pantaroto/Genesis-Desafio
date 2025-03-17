@@ -65,59 +65,8 @@
         crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-    document.getElementById("veiculo").addEventListener("change", function () {
-        let selectedOption = this.options[this.selectedIndex];
-        let kmAtual = selectedOption.getAttribute("data-km");
-        
-        document.getElementById("km_inicio").value = kmAtual ? kmAtual : "";
-    });
+    <script src="{{ asset('js/viagens.js') }}"></script>
 
-    document.getElementById("viagemForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        let motorista_id = document.getElementById("motorista").value;
-        let veiculo_id = document.getElementById("veiculo").value;
-        let km_inicio = document.getElementById("km_inicio").value;
-        let data_hora_inicio = document.getElementById("data_hora_inicio").value;
-        let data_hora_fim = document.getElementById("data_hora_fim").value;
-
-        fetch("{{ route('viagens.store') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                motorista_id: motorista_id,
-                veiculo_id: veiculo_id,
-                km_inicio: km_inicio,
-                data_hora_inicio: data_hora_inicio,
-                data_hora_fim: data_hora_fim
-            })
-        })
-        .then(response => response.json()
-            .then(data => ({ status: response.status, body: data }))
-        )
-        .then(({ status, body }) => {
-            if (status === 200) {
-                Swal.fire("Sucesso!", body.success, "success").then(() => {
-                    window.location.href = "{{ route('viagens.index') }}";
-                });
-            } else if (status === 422) {
-                let errorMessage = Object.values(body.errors).join('<br>');
-                Swal.fire("Erro de Validação", errorMessage, "error");
-            } else {
-                Swal.fire("Erro!", body.error || "Ocorreu um problema ao cadastrar a viagem.", "error");
-            }
-        })
-        .catch(error => {
-            Swal.fire("Erro!", "Ocorreu um problema ao cadastrar a viagem.", "error");
-        });
-    });
-
-
-    </script>
 
 </body>
 

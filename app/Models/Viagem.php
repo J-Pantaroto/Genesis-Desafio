@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,6 +19,14 @@ class Viagem extends Model
         'status'
     ];
 
+    //acessors para datas
+
+    public function getDataHoraInicioAttribute($value){
+        return Carbon::parse($value)->format('d/m/Y H:i');
+    }
+    public function getDataHoraFimAttribute($value){
+        return Carbon::parse($value)->format('d/m/Y H:i');
+    }
     public function veiculo(){
         return $this->belongsTo(Veiculo::class);
     }

@@ -16,11 +16,11 @@
                                     <strong>Veículo:</strong> {{ $viagem->veiculo->modelo }} -
                                     {{ $viagem->veiculo->placa }} <br>
                                     <strong>Início:</strong>
-                                    {{ \Carbon\Carbon::parse($viagem->data_hora_inicio)->format('d/m/Y H:i') }} <br>
+                                    {{ $viagem->data_hora_inicio }} <br>
                                     <strong>Fim:</strong>
-                                    {{ \Carbon\Carbon::parse($viagem->data_hora_fim)->format('d/m/Y H:i') }} <br>
+                                    {{ $viagem->data_hora_fim }} <br>
                                     <strong>Status:</strong>
-                                    @if ($viagem->status == 'AGUARDANDO INÍCIO')
+                                    @if ($viagem->status == 'AGUARDANDO INICIO')
                                         <span class="status status-aguardando">🟡 Aguardando</span>
                                     @elseif($viagem->status == 'EM ANDAMENTO')
                                         <span class="status status-andamento">🟢 Em Andamento</span>
