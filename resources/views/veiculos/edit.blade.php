@@ -32,7 +32,7 @@
                 <div class="mb-3">
                     <label for="data_aquisicao" class="form-label">Data de Aquisição</label>
                     <input type="date" class="form-control" id="data_aquisicao" name="data_aquisicao" required
-                        value="{{ ($veiculo->data_aquisicao) }}">
+                        value="{{ ($veiculo->data_aquisicao_iso) }}">
                 </div>
 
                 <div class="mb-3">

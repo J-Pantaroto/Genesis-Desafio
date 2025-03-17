@@ -12,6 +12,7 @@
                         <div class="card viagem-card mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $viagem->motorista->nome }} 🚕</h5>
+                                <h5 class="card-subtitle text-body-secondary">{{ $viagem->motorista2->nome }}👤 </h5>
                                 <p class="card-text">
                                     <strong>Veículo:</strong> {{ $viagem->veiculo->modelo }} -
                                     {{ $viagem->veiculo->placa }} <br>

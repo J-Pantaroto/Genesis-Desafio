@@ -27,6 +27,15 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="motorista2">Motorista 2 (Opcional)</label>
+                    <select name="motorista_id_2" id="motorista2" class="form-control">
+                        <option value="">Selecione um segundo motorista</option>
+                        @foreach($motoristasDisponiveis as $motorista)
+                            <option value="{{ $motorista->id }}">{{ $motorista->nome }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label for="veiculo" class="form-label">Veículo</label>
                     <select class="form-control" id="veiculo" name="veiculo_id" required>

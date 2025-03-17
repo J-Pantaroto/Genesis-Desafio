@@ -80,8 +80,7 @@ class VeiculoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $veiculo = Veiculo::findOrFail($id);
-    
+        $veiculo = Veiculo::findOrFail($id);    
         $validator = \Validator::make($request->all(), [
             'modelo' => 'required|string|max:255',
             'ano' => 'required|integer|min:1900|max:' . date('Y'),

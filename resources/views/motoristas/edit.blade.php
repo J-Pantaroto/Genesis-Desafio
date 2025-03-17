@@ -19,18 +19,20 @@
                 <input type="hidden" id="motorista_id" value="{{ $motorista->id }}">
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required value="{{ $motorista->nome }}">
+                    <input type="text" class="form-control" id="nome" name="nome" required
+                        value="{{ $motorista->nome }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-                    <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required 
-                        value="{{$motorista->data_nascimento }}">
+                    <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required
+                        value="{{ $motorista->data_nascimento_iso }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="cnh" class="form-label">CNH</label>
-                    <input type="text" class="form-control" id="cnh" maxlength="11" name="cnh" required value="{{ $motorista->cnh }}">
+                    <input type="text" class="form-control" id="cnh" maxlength="11" name="cnh" required
+                        value="{{ $motorista->cnh }}">
                 </div>
 
                 <button type="submit" class="btn btn-success">Editar</button>
@@ -48,4 +50,5 @@
 
 
 </body>
+
 </html>

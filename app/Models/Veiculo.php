@@ -20,8 +20,13 @@ class Veiculo extends Model
     ];
     //acessors para data
     public function getDataAquisicaoAttribute($value){
-        return Carbon::parse($value)->format('d/m/Y H:i');
+        return Carbon::parse($value)->format('d/m/Y');
     }
+    public function getDataAquisicaoIsoAttribute()
+    {
+        return Carbon::createFromFormat('d/m/Y', $this->data_aquisicao)->format('Y-m-d');
+    }
+    
     public function viagens(){
         return $this->hasMany(Viagem::class);
     }

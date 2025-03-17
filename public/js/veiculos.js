@@ -1,7 +1,35 @@
 document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const currentPath = window.location.pathname;
-    if (currentPath.includes("veiculos")) {
+    if (currentPath === "/veiculos") {
+        let table = $('.table');
+        if (table.find('tbody tr').length >= 1) {
+            table.DataTable({
+                "destroy": true,
+                "autoWidth": false,
+                "language": {
+                    "search": "",
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "zeroRecords": "Nada encontrado",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Nenhum dado disponível",
+                    "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                    "paginate": {
+                        "next": ">>>",
+                        "previous": "<<<"
+                    }
+                },
+                "dom": '<"top"f>rt<"bottom"lp><"clear">',
+            });
+
+            let searchInput = $('<input type="text" id="searchInput" class="form-control" placeholder="🔍 Pesquisar veículos...">');
+
+            $(".dataTables_filter label").replaceWith(searchInput);
+
+            searchInput.on('keyup', function () {
+                table.search(this.value).draw();
+            });
+        }
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", function () {
                 let veiculoId = this.getAttribute("data-id");
@@ -22,20 +50,21 @@ document.addEventListener("DOMContentLoaded", function () {
                                 "Content-Type": "application/json"
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire("Excluído!", data.success, "success").then(() => location.reload());
-                            } else {
-                                Swal.fire("Erro!", data.error, "error");
-                            }
-                        })
-                        .catch(() => Swal.fire("Erro!", "Ocorreu um problema ao excluir o veículo.", "error"));
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire("Excluído!", data.success, "success").then(() => location.reload());
+                                } else {
+                                    Swal.fire("Erro!", data.error, "error");
+                                }
+                            })
+                            .catch(() => Swal.fire("Erro!", "Ocorreu um problema ao excluir o veículo.", "error"));
                     }
                 });
             });
         });
-    } if (currentPath.includes("veiculos/edit")) {
+    }
+    if (currentPath.includes("veiculos/edit")) {
         const veiculoForm = document.getElementById("veiculoForm");
         if (veiculoForm) {
             veiculoForm.addEventListener("submit", function (event) {
@@ -50,25 +79,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: formData
                 })
-                .then(response => response.json().then(data => ({
-                    status: response.status,
-                    body: data
-                })))
-                .then(({ status, body }) => {
-                    if (status === 200) {
-                        Swal.fire("Sucesso!", body.success, "success").then(() => {
-                            window.location.href = "/veiculos";
-                        });
-                    } else if (status === 422) {
-                        let errorMessage = Object.values(body.errors).flat().join('<br>');
-                        Swal.fire("Erro de Validação", errorMessage, "error");
-                    } else {
-                        Swal.fire("Erro!", body.error || "Ocorreu um problema ao atualizar o veículo.", "error");
-                    }
-                })
-                .catch(() => {
-                    Swal.fire("Erro!", "Ocorreu um problema inesperado.", "error");
-                });
+                    .then(response => response.json().then(data => ({
+                        status: response.status,
+                        body: data
+                    })))
+                    .then(({ status, body }) => {
+                        if (status === 200) {
+                            Swal.fire("Sucesso!", body.success, "success").then(() => {
+                                window.location.href = "/veiculos";
+                            });
+                        } else if (status === 422) {
+                            let errorMessage = Object.values(body.errors).flat().join('<br>');
+                            Swal.fire("Erro de Validação", errorMessage, "error");
+                        } else {
+                            Swal.fire("Erro!", body.error || "Ocorreu um problema ao atualizar o veículo.", "error");
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire("Erro!", "Ocorreu um problema inesperado.", "error");
+                    });
             });
         }
     } if (currentPath.includes("veiculos/create")) {
@@ -99,26 +128,27 @@ document.addEventListener("DOMContentLoaded", function () {
                         placa: placa
                     })
                 })
-                .then(response => response.json().then(data => ({
-                    status: response.status,
-                    body: data
-                })))
-                .then(({ status, body }) => {
-                    if (status === 200) {
-                        Swal.fire("Sucesso!", body.success, "success").then(() => {
-                            window.location.href = "/veiculos";
-                        });
-                    } else if (status === 422) {
-                        let errorMessage = Object.values(body.errors).flat().join('<br>');
-                        Swal.fire("Erro de Validação", errorMessage, "error");
-                    } else {
-                        Swal.fire("Erro!", body.error || "Ocorreu um problema ao cadastrar o veículo.", "error");
-                    }
-                })
-                .catch(() => {
-                    Swal.fire("Erro!", "Ocorreu um problema inesperado ao cadastrar o veículo.", "error");
-                });
+                    .then(response => response.json().then(data => ({
+                        status: response.status,
+                        body: data
+                    })))
+                    .then(({ status, body }) => {
+                        if (status === 200) {
+                            Swal.fire("Sucesso!", body.success, "success").then(() => {
+                                window.location.href = "/veiculos";
+                            });
+                        } else if (status === 422) {
+                            let errorMessage = Object.values(body.errors).flat().join('<br>');
+                            Swal.fire("Erro de Validação", errorMessage, "error");
+                        } else {
+                            Swal.fire("Erro!", body.error || "Ocorreu um problema ao cadastrar o veículo.", "error");
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire("Erro!", "Ocorreu um problema inesperado ao cadastrar o veículo.", "error");
+                    });
             });
         }
     }
+
 });

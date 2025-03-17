@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('veiculo_id')->nullable();
             $table->foreignId('motorista_id')->nullable();
+            $table->foreignId('motorista_id_2')->nullable();
             $table->bigInteger('km_inicio');
             $table->bigInteger('km_fim')->nullable();
             $table->dateTime('data_hora_inicio');

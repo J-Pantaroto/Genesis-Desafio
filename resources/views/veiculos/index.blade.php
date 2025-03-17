@@ -2,8 +2,8 @@
     <div class="container mt-4">
         <h1 class="text-center">Veiculos</h1>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ route('veiculos.create') }}" class="btn btn-primary">Novo veiculos</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{{ route('veiculos.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Novo veiculo</a>
         </div>
         <div class="table-responsive">
             <table class="table table-striped mt-3">
@@ -33,7 +33,8 @@
                                 <td class="text-center">{{ $veiculo->ano }}</td>
                                 <td class="text-center">{{ $veiculo->data_aquisicao }}</td>
                                 <td class="text-center">{{ $veiculo->km_aquisicao }}</td>
-                                <td class="text-center">{{ $veiculo->km_atual }}</td>
+                                <td class="{{ $veiculo->km_atual > 100000 ? 'alto-km' : '' }} text-center">
+                                    {{ $veiculo->km_atual }}</td>
                                 <td class="text-center">{{ $veiculo->renavam }}</td>
                                 <td class="text-center">{{ $veiculo->placa }}</td>
                                 <td class="text-center">
@@ -49,9 +50,6 @@
             </table>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="{{ asset('js/veiculos.js') }}"></script>
 </x-main-layout>

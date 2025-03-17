@@ -2,8 +2,9 @@
     <div class="container mt-4">
         <h1 class="text-center">Motoristas</h1>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ route('motoristas.create') }}" class="btn btn-primary">Novo Motorista</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{{ route('motoristas.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Novo
+                Motorista</a>
         </div>
         <div class="table-responsive">
             <table class="table table-striped mt-3">
@@ -19,7 +20,7 @@
                 <tbody>
                     @if ($motoristas->isEmpty())
                         <tr>
-                            <td colspan="6" class="text-center">Nenhum motorista cadastrado!</td>
+                            <td colspan="5" class="text-center">Nenhum motorista cadastrado!</td>
                         </tr>
                     @else
                         @foreach ($motoristas as $motorista)

@@ -11,6 +11,7 @@ class Viagem extends Model
     protected $table = 'viagens';
     protected $fillable = [
         'motorista_id',
+        'motorista_id_2',
         'veiculo_id',
         'km_inicio',
         'km_fim',
@@ -27,11 +28,24 @@ class Viagem extends Model
     public function getDataHoraFimAttribute($value){
         return Carbon::parse($value)->format('d/m/Y H:i');
     }
+    public function getDataHoraInicioIsoAttribute()
+{
+    return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_inicio)->format('Y-m-d\TH:i');
+}
+
+public function getDataHoraFimIsoAttribute()
+{
+    return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_fim)->format('Y-m-d\TH:i');
+}
     public function veiculo(){
         return $this->belongsTo(Veiculo::class);
     }
     public function motorista(){
         return $this->belongsTo(Motorista::class);
     }
-
+    public function motorista2()
+    {
+        return $this->belongsTo(Motorista::class, 'motorista_id_2');
+    }
+    
 }

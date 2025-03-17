@@ -2,7 +2,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const currentPath = window.location.pathname;
 
-    if (currentPath.includes("viagens")) {
+    if (currentPath === "/viagens") {
+        let table = $('.table');
+        if (table.find('tbody tr').length >= 1) {
+            table.DataTable({
+            "destroy": true,
+            "autoWidth": false,
+            "language": {
+                "search": "",
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "Nada encontrado",
+                "info": "Página _PAGE_ de _PAGES_",
+                "infoEmpty": "Nenhum dado disponível",
+                "infoFiltered": "(filtrado de _MAX_ registros no total)",
+                "paginate": {
+                    "next": ">>>",
+                    "previous": "<<<"
+                }
+            },
+            "dom": '<"top"f>rt<"bottom"lp><"clear">',
+        });
+            let searchInput = $('<input type="text" id="searchInput" class="form-control" placeholder="🔍 Pesquisar viagens...">');
+
+            $(".dataTables_filter label").replaceWith(searchInput);
+
+            searchInput.on('keyup', function () {
+                table.search(this.value).draw();
+            });
+        }
         document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", function (event) {
                 event.preventDefault();
@@ -229,6 +256,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.preventDefault();
 
                 let motorista_id = document.getElementById("motorista").value;
+                let motorista_id_2 = document.getElementById("motorista2").value;
                 let veiculo_id = document.getElementById("veiculo").value;
                 let km_inicio = document.getElementById("km_inicio").value;
                 let data_hora_inicio = document.getElementById("data_hora_inicio").value;
@@ -242,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: JSON.stringify({
                         motorista_id: motorista_id,
+                        motorista_id_2: motorista_id_2 || null,
                         veiculo_id: veiculo_id,
                         km_inicio: km_inicio,
                         data_hora_inicio: data_hora_inicio,

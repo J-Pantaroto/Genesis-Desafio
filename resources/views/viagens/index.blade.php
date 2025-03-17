@@ -2,15 +2,15 @@
     <div class="container mt-4">
         <h1 class="text-center">Viagens</h1>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ route('viagens.create') }}" class="btn btn-primary">Nova Viagem</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{{ route('viagens.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nova Viagem</a>
         </div>
         <div class="table-responsive">
             <table class="table table-striped mt-3">
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" scope="col">ID</th>
-                        <th class="text-center" scope="col">Motorista</th>
+                        <th class="text-center" scope="col">Motoristas</th>
                         <th class="text-center"scope="col">Veículo</th>
                         <th class="text-center" scope="col">Início</th>
                         <th class="text-center" scope="col">Chegada</th>
@@ -35,6 +35,9 @@
                                     @else
                                         A definir
                                     @endisset
+                                    @if (isset($viagem->motorista2))
+                                        <br> {{ $viagem->motorista2->nome }}
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     @isset($viagem->veiculo)
@@ -47,8 +50,7 @@
                                 <td class="text-center">{{ $viagem->data_hora_fim }}</td>
                                 <td class="text-center">{{ $viagem->km_inicio }}</td>
                                 <td class="text-center">{{ $viagem->km_fim }}</td>
-                                <td class="status {{ str_replace(' ', '-', $viagem->status) }}">{{ $viagem->status }}
-                                </td>
+                                <td class="status {{ str_replace(' ', '-', $viagem->status) }}">{{ $viagem->status }}</td>
                                 <td class="text-center">
                                     @if ($viagem->status === 'AGUARDANDO INICIO')
                                         <button class="btn btn-success btn-sm iniciar-btn m-1"
@@ -62,9 +64,8 @@
                                     <a data-id="{{ $viagem->id }}" href="{{ route('viagens.edit', $viagem->id) }}"
                                         class="btn btn-warning btn-sm m-1 edit-btn"><i class="fas fa-edit"></i>
                                         Editar</a>
-
-                                    <button class="btn btn-danger btn-sm delete-btn m-1"
-                                        data-id="{{ $viagem->id }}"><i class="fa-solid fa-trash fa-lg"></i></button>
+                                    <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $viagem->id }}"><i
+                                            class="fa-solid fa-trash fa-lg"></i></button>
                                 </td>
 
                             </tr>

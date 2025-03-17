@@ -21,20 +21,31 @@
                     <label for="motorista" class="form-label">Motorista</label>
                     <select class="form-control" id="motorista" name="motorista_id" required>
                         <option value="">Selecione um motorista</option>
-                        @foreach($motoristasDisponiveis as $motorista)
-                            <option value="{{ $motorista->id }}" 
+                        @foreach ($motoristasDisponiveis as $motorista)
+                            <option value="{{ $motorista->id }}"
                                 {{ $viagem->motorista_id == $motorista->id ? 'selected' : '' }}>
                                 {{ $motorista->nome }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-
+                <div class="mb-3">
+                    <label for="motorista2" class="form-label">Motorista 2 (Opcional)</label>
+                    <select class="form-control" id="motorista2" name="motorista_id_2">
+                        <option value="">Selecione um segundo motorista</option>
+                        @foreach ($motoristasDisponiveis as $motorista)
+                            <option value="{{ $motorista->id }}" 
+                                {{ $viagem->motorista_id_2 == $motorista->id ? 'selected' : '' }}>
+                                {{ $motorista->nome }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label for="veiculo" class="form-label">Veículo</label>
                     <select class="form-control" id="veiculo" name="veiculo_id" required>
                         <option value="">Selecione um veículo</option>
-                        @foreach($veiculosDisponiveis as $veiculo)
+                        @foreach ($veiculosDisponiveis as $veiculo)
                             <option value="{{ $veiculo->id }}" data-km="{{ $veiculo->km_atual }}"
                                 {{ $viagem->veiculo_id == $veiculo->id ? 'selected' : '' }}>
                                 {{ $veiculo->modelo }} - {{ $veiculo->placa }}
@@ -51,14 +62,14 @@
 
                 <div class="mb-3">
                     <label for="data_hora_inicio" class="form-label">Data e Hora de Início</label>
-                    <input type="datetime-local" class="form-control" id="data_hora_inicio" name="data_hora_inicio" required
-                        value="{{ \Carbon\Carbon::parse($viagem->data_hora_inicio)->format('Y-m-d\TH:i') }}">
+                    <input type="datetime-local" class="form-control" id="data_hora_inicio" name="data_hora_inicio"
+                        required value="{{ $viagem->data_hora_inicio_iso }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="data_hora_fim" class="form-label">Data e Hora de Fim</label>
                     <input type="datetime-local" class="form-control" id="data_hora_fim" name="data_hora_fim" required
-                        value="{{ \Carbon\Carbon::parse($viagem->data_hora_fim)->format('Y-m-d\TH:i') }}">
+                        value="{{ $viagem->data_hora_fim_iso }}">
                 </div>
 
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -67,12 +78,12 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/viagens.js') }}"></script>
 
-   
+
 </body>
 
 </html>
