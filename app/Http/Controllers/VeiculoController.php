@@ -10,19 +10,52 @@ class VeiculoController extends Controller
         $veiculos = Veiculo::all();
         return view('veiculos.index', compact('veiculos'));
     }
-
-    public function store(Request $request){
-        $request->validate([
+    public function create(){
+        return view('veiculos.create');
+    }
+    public function store(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
             'modelo' => 'required|string|max:255',
-            'ano' => 'required|date|before_or_equal:today',
+            'ano' => 'required|integer|min:1900|max:' . date('Y'),
             'data_aquisicao' => 'required|date|before_or_equal:today',
             'km_aquisicao' => 'required|numeric|min:0',
-            'renavam' => 'required|string|unique:veiculos,renavam',
-            'placa' => 'required|string|max:7|unique:veiculos,placa',
-        ],[
-            'ano.before_or_equal' => 'O ano do veiculo nao pode estar no futuro',
-            'data_aquisicao.before_or_equal' => 'A data de aquisicao nao pode estar no futuro'
+            'renavam' => 'required|string|min:11|max:11|unique:veiculos,renavam',
+            'placa' => 'required|string|min:7|max:7|unique:veiculos,placa',
+        ], [
+            'modelo.required' => 'O campo modelo é obrigatório.',
+            'modelo.string' => 'O modelo deve ser um texto válido.',
+            'modelo.max' => 'O modelo não pode ter mais de 255 caracteres.',
+        
+            'ano.required' => 'O campo ano é obrigatório.',
+            'ano.integer' => 'O ano do veículo deve ser um número inteiro.',
+            'ano.min' => 'O ano do veículo deve ser no mínimo 1900.',
+            'ano.max' => 'O ano do veículo não pode estar no futuro.',
+        
+            'data_aquisicao.required' => 'A data de aquisição é obrigatória.',
+            'data_aquisicao.date' => 'A data de aquisição deve ser uma data válida.',
+            'data_aquisicao.before_or_equal' => 'A data de aquisição não pode estar no futuro.',
+        
+            'km_aquisicao.required' => 'A quilometragem de aquisição é obrigatória.',
+            'km_aquisicao.numeric' => 'A quilometragem de aquisição deve ser um número válido.',
+            'km_aquisicao.min' => 'A quilometragem de aquisição não pode ser negativa.',
+        
+            'renavam.required' => 'O campo Renavam é obrigatório.',
+            'renavam.string' => 'O Renavam deve ser um texto válido.',
+            'renavam.unique' => 'Este número de Renavam já está cadastrado.',
+            'renavam.max' => 'O renavam deve ter 11 caracteres.',
+            'renavam.min' => 'O renavam deve ter 11 caracteres.',
+        
+            'placa.required' => 'O campo placa é obrigatório.',
+            'placa.string' => 'A placa deve ser um texto válido.',
+            'placa.max' => 'A placa deve ter 7 caracteres.',
+            'placa.min' => 'A placa deve ter 7 caracteres.',
+            'placa.unique' => 'Esta placa já está cadastrada em outro veículo.',
         ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }           
         $veiculo = Veiculo::create([
             'modelo' => $request->modelo,
             'ano' => $request->ano,
@@ -32,8 +65,10 @@ class VeiculoController extends Controller
             'renavam' => $request->renavam,
             'placa' => $request->placa,
         ]);
-        return response()->json($veiculo, 201);
+    
+        return response()->json(['success' => 'Veiculo cadastrado com sucesso']);
     }
+
     public function show($id){
         return response()->json(Veiculo::findOrFail($id));
     }
@@ -46,26 +81,49 @@ class VeiculoController extends Controller
     public function update(Request $request, $id)
     {
         $veiculo = Veiculo::findOrFail($id);
-
-        $request->validate([
+    
+        $validator = \Validator::make($request->all(), [
             'modelo' => 'required|string|max:255',
-            'ano' => 'required|date',
+            'ano' => 'required|integer|min:1900|max:' . date('Y'),
             'data_aquisicao' => 'required|date',
-            'km_aquisicao' => 'required|numeric|min:0',
-            'renavam' => 'required|string|unique:veiculos,renavam,' . $id,
-            'placa' => 'required|string|unique:veiculos,placa,' . $id,
+        ], [
+            'ano.integer' => 'O campo ano deve ser um número.',
+            'ano.min' => 'O ano deve ser maior que 1900.',
+            'ano.max' => 'O ano não pode ser maior que o ano atual.',
         ]);
-
-        $veiculo->update($request->all());
-
-        return response()->json(['success' => 'Veiculo atualizado com sucesso']);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        $veiculo->update($request->only(['modelo', 'ano', 'data_aquisicao']));
+    
+        return response()->json(['success' => 'Veículo atualizado com sucesso!']);
     }
+    
     public function destroy($id){
         $veiculo = Veiculo::findOrFail($id);
-        if($veiculo->viagens()->count()>0){
-            return response()->json(['error' => 'Nao e possivel excluir um veiculo com viagens'],422);
+        if ($veiculo->viagens()->where('status', 'EM ANDAMENTO')->exists()) {
+            return response()->json(['error' => 'Não é possível excluir um veiculo com viagens em andamento'], 422);
+        }
+        $viagensAguardandoIds = [];
+        $viagensAguardando = $veiculo->viagens()->where('status', 'AGUARDANDO INICIO')->get();
+        foreach($viagensAguardando as $viagem){
+            $viagem->veiculo_id = null;
+            $viagem->save();
+            $viagensAguardandoIds[] = $viagem->id;
         }
         $veiculo->delete();
-        return response()->json(['success' => 'Veiculo excluido com sucesso']);
+        $mensagem = 'Veiculo excluído com sucesso.';
+        if (!empty($viagensAguardandoIds)) {
+            $mensagem .= ' As seguintes viagens estavam aguardando início e agora não possuem veiculo: ' 
+                       . implode(', ', $viagensAguardandoIds) 
+                       . '. Defina um novo veiculo ou exclua essas viagens.';
+        }
+        return response()->json([
+            'success' => $mensagem
+        ]);
     }
+
+
 }

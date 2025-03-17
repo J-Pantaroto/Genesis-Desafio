@@ -1,0 +1,30 @@
+.viagem-card {
+    border-left: 5px solid #007bff;
+    transition: 0.3s;
+}
+
+.viagem-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.status-aguardando {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-andamento {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-finalizado {
+    background-color: #dc3545;
+    color: #fff;
+}

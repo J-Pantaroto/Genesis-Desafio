@@ -9,13 +9,14 @@ class Viagem extends Model
 {
     use HasFactory;
     protected $table = 'viagens';
-    protected $filable = [
+    protected $fillable = [
         'motorista_id',
         'veiculo_id',
         'km_inicio',
         'km_fim',
         'data_hora_inicio',
         'data_hora_fim',
+        'status'
     ];
 
     public function veiculo(){

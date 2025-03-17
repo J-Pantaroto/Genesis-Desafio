@@ -11,13 +11,14 @@ return new class extends Migration
     {
         Schema::create('viagens', function (Blueprint $table){
             $table->id();
-            $table->foreignId('veiculo_id')->constrained('veiculos')->onDelete('restrict');
-            $table->foreignId('motorista_id')->constrained('motoristas')->onDelete('restrict');
+            $table->foreignId('veiculo_id')->nullable();
+            $table->foreignId('motorista_id')->nullable();
             $table->bigInteger('km_inicio');
-            $table->bigInteger('km_fim');
+            $table->bigInteger('km_fim')->nullable();
             $table->dateTime('data_hora_inicio');
             $table->dateTime('data_hora_fim');
-            $table->enum('status',['AGUARDANDO INICIO', 'EM ANDAMENTO', 'FINALIZADO'])->default('AGUARDANDO INICIO');
+            $table->enum('status',['AGUARDANDO INICIO', 'EM ANDAMENTO', 'FINALIZADA'])->default('AGUARDANDO INICIO');
+            $table->timestamps();
         });
     }
 

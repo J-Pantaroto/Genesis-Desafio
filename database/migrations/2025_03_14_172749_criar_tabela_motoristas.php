@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('nome');
             $table->date('data_nascimento');
             $table->string('cnh')->unique();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
