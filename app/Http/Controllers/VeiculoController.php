@@ -100,29 +100,41 @@ class VeiculoController extends Controller
         return response()->json(['success' => 'Veículo atualizado com sucesso!']);
     }
     
-    public function destroy($id){
+    public function destroy($id)
+    {
         $veiculo = Veiculo::findOrFail($id);
+    
         if ($veiculo->viagens()->where('status', 'EM ANDAMENTO')->exists()) {
-            return response()->json(['error' => 'Não é possível excluir um veiculo com viagens em andamento'], 422);
+            return response()->json(['error' => 'Não é possível excluir um veículo com viagens em andamento.'], 422);
         }
+    
         $viagensAguardandoIds = [];
         $viagensAguardando = $veiculo->viagens()->where('status', 'AGUARDANDO INICIO')->get();
-        foreach($viagensAguardando as $viagem){
-            $viagem->veiculo_id = null;
+    
+        foreach ($viagensAguardando as $viagem) {
+            $viagem->veiculo_id = null; 
             $viagem->save();
             $viagensAguardandoIds[] = $viagem->id;
         }
-        $veiculo->delete();
-        $mensagem = 'Veiculo excluído com sucesso.';
-        if (!empty($viagensAguardandoIds)) {
-            $mensagem .= ' As seguintes viagens estavam aguardando início e agora não possuem veiculo: ' 
-                       . implode(', ', $viagensAguardandoIds) 
-                       . '. Defina um novo veiculo ou exclua essas viagens.';
+    
+        if ($veiculo->viagens()->where('status', 'FINALIZADA')->exists()) {
+            return response()->json([
+                'error' => 'Não é possível excluir este veículo, pois ele está associado a viagens finalizadas. O histórico deve ser mantido.'
+            ], 422);
         }
+    
+        $veiculo->delete();
+    
+        $mensagem = 'Veículo excluído com sucesso.';
+        if (!empty($viagensAguardandoIds)) {
+            $mensagem .= ' As seguintes viagens estavam aguardando início e agora não possuem veículo: ' 
+                       . implode(', ', $viagensAguardandoIds) 
+                       . '. Defina um novo veículo ou exclua essas viagens.';
+        }
+    
         return response()->json([
             'success' => $mensagem
         ]);
     }
-
 
 }
