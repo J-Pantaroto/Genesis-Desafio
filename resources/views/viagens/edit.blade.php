@@ -15,8 +15,7 @@
         <h1 class="text-center">Editar Viagem</h1>
 
         <div class="card p-4 mt-3">
-            <form id="viagemForm">
-
+        <form id="viagemForm" data-id="{{ $viagem->id }}">
                 <div class="mb-3">
                     <label for="motorista" class="form-label">Motorista</label>
                     <select class="form-control" id="motorista" name="motorista_id" required>

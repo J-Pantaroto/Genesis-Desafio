@@ -66,27 +66,45 @@ class MotoristaController extends Controller
         }
     }
     
-    public function destroy($id){
+    public function destroy($id)
+    {
         $motorista = Motorista::findOrFail($id);
         if ($motorista->viagens()->where('status', 'EM ANDAMENTO')->exists()) {
-            return response()->json(['error' => 'Não é possível excluir um motorista com viagens em andamento'], 422);
+            return response()->json(['error' => 'Não é possível excluir um motorista com viagens em andamento.'], 422);
         }
-        $viagensAguardandoIds = [];
+    
         $viagensAguardando = $motorista->viagens()->where('status', 'AGUARDANDO INICIO')->get();
-        foreach($viagensAguardando as $viagem){
-            $viagem->motorista_id = null;
+        $viagensAguardandoIds = [];
+    
+        foreach ($viagensAguardando as $viagem) {
+            if ($viagem->motorista_id == $id) {
+                if (!is_null($viagem->motorista_id_2)) {
+                    $viagem->motorista_id = $viagem->motorista_id_2;
+                    $viagem->motorista_id_2 = null;
+                } else {
+                    $viagem->motorista_id = null;
+                }
+            }
+    
+            if ($viagem->motorista_id_2 == $id) {
+                $viagem->motorista_id_2 = null;
+            }
+    
             $viagem->save();
             $viagensAguardandoIds[] = $viagem->id;
         }
+
         $motorista->delete();
+
         $mensagem = 'Motorista excluído com sucesso.';
         if (!empty($viagensAguardandoIds)) {
-            $mensagem .= ' As seguintes viagens estavam aguardando início e agora não possuem motorista: ' 
+            $mensagem .= ' As seguintes viagens estavam aguardando início e tiveram o motorista atualizado ou removido: ' 
                        . implode(', ', $viagensAguardandoIds) 
-                       . '. Defina um novo motorista ou exclua essas viagens.';
+                       . '. Verifique e defina um novo motorista, se necessário.';
         }
-        return response()->json([
-            'success' => $mensagem
-        ]);
+    
+        return response()->json(['success' => $mensagem]);
     }
+    
 }
+

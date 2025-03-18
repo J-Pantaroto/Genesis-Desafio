@@ -3,38 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentPath = window.location.pathname;
 
     if (currentPath === "/viagens") {
-        let table = $('.table');
-        if (table.find('tbody tr').length >= 1) {
-            table.DataTable({
-            "destroy": true,
-            "autoWidth": false,
-            "language": {
-                "search": "",
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "Nada encontrado",
-                "info": "Página _PAGE_ de _PAGES_",
-                "infoEmpty": "Nenhum dado disponível",
-                "infoFiltered": "(filtrado de _MAX_ registros no total)",
-                "paginate": {
-                    "next": ">>>",
-                    "previous": "<<<"
-                }
-            },
-            "dom": '<"top"f>rt<"bottom"lp><"clear">',
-        });
-            let searchInput = $('<input type="text" id="searchInput" class="form-control" placeholder="🔍 Pesquisar viagens...">');
-
-            $(".dataTables_filter label").replaceWith(searchInput);
-
-            searchInput.on('keyup', function () {
-                table.search(this.value).draw();
-            });
-        }
         document.querySelectorAll(".edit-btn").forEach(button => {
             button.addEventListener("click", function (event) {
                 event.preventDefault();
                 let viagemId = this.getAttribute("data-id");
-
                 fetch(`/viagens/edit/${viagemId}`, {
                     method: "GET",
                     headers: {
@@ -208,7 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 let formData = new FormData(this);
                 formData.append("_method", "PUT");
-                let viagemId = this.getAttribute("data-id");
+                let viagemId = document.getElementById("viagemForm").getAttribute("data-id");
+                console.log("ID da viagem a ser editada:", viagemId);
 
                 fetch(`/viagens/${viagemId}`, {
                     method: "POST",

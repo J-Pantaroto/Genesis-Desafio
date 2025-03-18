@@ -2,34 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     const currentPath = window.location.pathname;
     if (currentPath === "/veiculos") {
-        let table = $('.table');
-        if (table.find('tbody tr').length >= 1) {
-            table.DataTable({
-                "destroy": true,
-                "autoWidth": false,
-                "language": {
-                    "search": "",
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "Nada encontrado",
-                    "info": "Página _PAGE_ de _PAGES_",
-                    "infoEmpty": "Nenhum dado disponível",
-                    "infoFiltered": "(filtrado de _MAX_ registros no total)",
-                    "paginate": {
-                        "next": ">>>",
-                        "previous": "<<<"
-                    }
-                },
-                "dom": '<"top"f>rt<"bottom"lp><"clear">',
-            });
-
-            let searchInput = $('<input type="text" id="searchInput" class="form-control" placeholder="🔍 Pesquisar veículos...">');
-
-            $(".dataTables_filter label").replaceWith(searchInput);
-
-            searchInput.on('keyup', function () {
-                table.search(this.value).draw();
-            });
-        }
         document.querySelectorAll(".delete-btn").forEach(button => {
             button.addEventListener("click", function () {
                 let veiculoId = this.getAttribute("data-id");

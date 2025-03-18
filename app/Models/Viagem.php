@@ -40,8 +40,9 @@ public function getDataHoraFimIsoAttribute()
     public function veiculo(){
         return $this->belongsTo(Veiculo::class);
     }
-    public function motorista(){
-        return $this->belongsTo(Motorista::class);
+    public function motorista()
+    {
+        return $this->belongsTo(Motorista::class)->withTrashed();
     }
     public function motorista2()
     {
