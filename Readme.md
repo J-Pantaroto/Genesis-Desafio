@@ -13,18 +13,25 @@ Este projeto tem como objetivo implementar um sistema de controle de viagens uti
 1. **Clone o repositório**:
    ```sh
    git clone <https://github.com/J-Pantaroto/Genesis-Desafio.git>
+   
+   ```
+2. **Va para o diretorio Genesis-Desafio**:
+   ```sh
    cd Genesis-Desafio
    ```
-2. **Construa a imagem do Docker**:
+3. **Construa a imagem do Docker**:
    ```sh
    docker-compose build
    ```
 
-3. **Suba os containers do Docker**:
+4. **Suba os containers do Docker**:
    ```sh
    docker-compose up -d
    ```
-
+5. **Acesse no navegador**:
+   ```sh
+   localhost:8000
+   ```
 ## Modificações no `docker-compose.yml`
 
 O arquivo `docker-compose.yml` original foi modificado para incluir:
