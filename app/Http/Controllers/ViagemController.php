@@ -94,11 +94,11 @@ class ViagemController extends Controller
     public function finalizar(Request $request, $id)
     {
         $viagem = Viagem::findOrFail($id);
-    
+
         if ($viagem->status !== 'EM ANDAMENTO') {
             return response()->json(['error' => 'Apenas viagens "EM ANDAMENTO" podem ser finalizadas.']);
         }
-    
+
         $validator = \Validator::make($request->all(), [
             'km_fim' => 'required|numeric|min:' . $viagem->km_inicio,
             'data_hora_fim' => [
@@ -106,7 +106,8 @@ class ViagemController extends Controller
                 'date',
                 'after_or_equal:' . $viagem->data_hora_inicio,
                 function ($attribute, $value, $fail) {
-                    if ($value > now()) {
+                    $now = now()->setTimezone('America/Cuiaba');
+                    if (\Carbon\Carbon::parse($value)->greaterThan($now)) {
                         $fail('A data/hora de fim não pode estar no futuro.');
                     }
                 },
@@ -115,19 +116,19 @@ class ViagemController extends Controller
             'km_fim.min' => 'O KM final deve ser maior ou igual ao KM inicial',
             'data_hora_fim.after_or_equal' => 'A data/hora de fim deve ser posterior ou igual à data de início',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         $viagem->update([
             'km_fim' => $request->km_fim,
             'data_hora_fim' => $request->data_hora_fim,
             'status' => 'FINALIZADA'
         ]);
-    
+
         $viagem->veiculo->update(['km_atual' => $request->km_fim]);
-    
+
         return response()->json(['success' => 'Viagem finalizada!']);
     }
     public function update(Request $request, $id)
