@@ -11,10 +11,10 @@
                     <tr>
                         <th class="text-center" scope="col">ID</th>
                         <th class="text-center" scope="col">Motoristas</th>
-                        <th class="text-center"scope="col">Veículo</th>
+                        <th class="text-center" scope="col">Veículo</th>
                         <th class="text-center" scope="col">Início</th>
                         <th class="text-center" scope="col">Chegada</th>
-                        <th class="text-center" scope="col">KM de Saida</th>
+                        <th class="text-center" scope="col">KM de Saída</th>
                         <th class="text-center" scope="col">KM de Chegada</th>
                         <th class="text-center" scope="col">Status</th>
                         <th class="text-center" scope="col">Ações</th>
@@ -29,23 +29,23 @@
                         @foreach ($viagens as $viagem)
                             <tr>
                                 <th class="text-center" scope="row">{{ $viagem->id }}</th>
+
+                                {{-- Exibição dos Motoristas --}}
                                 <td class="text-center">
-                                    @isset($viagem->motorista)
-                                        {{ $viagem->motorista->nome }}
+                                    @if ($viagem->motoristas->isNotEmpty())
+                                        @foreach ($viagem->motoristas as $motorista)
+                                            {{ $motorista->nome }} <br>
+                                        @endforeach
                                     @else
                                         A definir
-                                    @endisset
-                                    @if (isset($viagem->motorista2))
-                                        <br> {{ $viagem->motorista2->nome }}
                                     @endif
                                 </td>
+
+                                {{-- Exibição do Veículo --}}
                                 <td class="text-center">
-                                    @isset($viagem->veiculo)
-                                        {{ $viagem->veiculo->modelo }}
-                                    @else
-                                        A definir
-                                    @endisset
+                                    {{ $viagem->veiculo->modelo ?? 'A definir' }}
                                 </td>
+
                                 <td class="text-center">{{ $viagem->data_hora_inicio }}</td>
                                 <td class="text-center">{{ $viagem->data_hora_fim }}</td>
                                 <td class="text-center">{{ $viagem->km_inicio }}</td>
@@ -67,7 +67,6 @@
                                     <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $viagem->id }}"><i
                                             class="fa-solid fa-trash fa-lg"></i></button>
                                 </td>
-
                             </tr>
                         @endforeach
                     @endif
@@ -76,6 +75,4 @@
         </div>
     </div>
     <script src="{{ asset('js/viagens.js') }}"></script>
-
-
 </x-main-layout>

@@ -10,8 +10,6 @@ class Viagem extends Model
     use HasFactory;
     protected $table = 'viagens';
     protected $fillable = [
-        'motorista_id',
-        'motorista_id_2',
         'veiculo_id',
         'km_inicio',
         'km_fim',
@@ -22,31 +20,32 @@ class Viagem extends Model
 
     //acessors para datas
 
-    public function getDataHoraInicioAttribute($value){
+    public function getDataHoraInicioAttribute($value)
+    {
         return Carbon::parse($value)->format('d/m/Y H:i');
     }
-    public function getDataHoraFimAttribute($value){
+    public function getDataHoraFimAttribute($value)
+    {
         return Carbon::parse($value)->format('d/m/Y H:i');
     }
     public function getDataHoraInicioIsoAttribute()
-{
-    return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_inicio)->format('Y-m-d\TH:i');
-}
+    {
+        return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_inicio)->format('Y-m-d\TH:i');
+    }
 
-public function getDataHoraFimIsoAttribute()
-{
-    return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_fim)->format('Y-m-d\TH:i');
-}
-    public function veiculo(){
+    public function getDataHoraFimIsoAttribute()
+    {
+        return Carbon::createFromFormat('d/m/Y H:i', $this->data_hora_fim)->format('Y-m-d\TH:i');
+    }
+    public function veiculo()
+    {
         return $this->belongsTo(Veiculo::class);
     }
-    public function motorista()
+    public function motoristas()
     {
-        return $this->belongsTo(Motorista::class)->withTrashed();
+        return $this->belongsToMany(Motorista::class, 'viagem_motoristas')
+            ->withPivot('tipo_motorista')
+            ->withTimestamps();
     }
-    public function motorista2()
-    {
-        return $this->belongsTo(Motorista::class, 'motorista_id_2');
-    }
-    
+
 }

@@ -23,7 +23,10 @@ class Motorista extends Model
     return Carbon::createFromFormat('d/m/Y', $this->data_nascimento)->format('Y-m-d');
 }
 
-    public function viagens(){
-        return $this->hasMany(Viagem::class);
-    }
+public function viagens()
+{
+    return $this->belongsToMany(Viagem::class, 'viagem_motoristas')
+                ->withPivot('tipo_motorista')
+                ->withTimestamps();
+}
 }

@@ -12,7 +12,7 @@ class ViagemController extends Controller
 {
     public function index()
     {
-        $viagens = Viagem::all();
+        $viagens = Viagem::with('motoristas')->get();
         return view('viagens.index', compact('viagens'));
     }
 
@@ -33,53 +33,85 @@ class ViagemController extends Controller
     }
     public function store(Request $request)
     {
+    
+        if (!is_array($request->motoristas) || count($request->motoristas) === 0) {
+            return response()->json(['error' => 'É necessário selecionar pelo menos um motorista.'], 422);
+        }
+    
         $validator = \Validator::make($request->all(), [
             'veiculo_id' => 'required|exists:veiculos,id',
-            'motorista_id' => 'required|exists:motoristas,id',
-            'motorista_id_2' => 'nullable|exists:motoristas,id|different:motorista_id',
+            'motoristas' => 'required|array|min:1',
+            'motoristas.*.id' => 'required|exists:motoristas,id',
+            'motoristas.*.tipo' => 'required|in:Principal,Auxiliar',
             'km_inicio' => 'required|numeric|min:0',
             'data_hora_inicio' => [
                 'required',
                 'date',
                 function ($attribute, $value, $fail) {
-
-                    if (Carbon::parse($value)->toDateString() < Carbon::today()->toDateString()) {
+                    if (Carbon::parse($value)->lt(Carbon::today())) {
                         $fail('A data de início não pode ser anterior à data atual.');
                     }
                 },
             ],
             'data_hora_fim' => 'required|date|after:data_hora_inicio',
         ], [
+            'motoristas.required' => 'É necessário selecionar pelo menos um motorista.',
+            'motoristas.*.id.required' => 'Cada motorista deve ter um ID.',
+            'motoristas.*.id.exists' => 'Um dos motoristas selecionados não existe.',
+            'motoristas.*.tipo.required' => 'O tipo do motorista é obrigatório.',
+            'motoristas.*.tipo.in' => 'O tipo do motorista deve ser "Principal" ou "Auxiliar".',
             'data_hora_fim.after' => 'A data/hora de fim deve ser posterior à data/hora de início.',
-            'motorista_id_2.different' => 'Os motoristas devem ser diferentes.'
         ]);
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         $veiculo = Veiculo::findOrFail($request->veiculo_id);
-
         if ($request->km_inicio != $veiculo->km_atual) {
             return response()->json([
-                'error' => 'O KM inicial informado não corresponde ao KM atual do veículo. Por favor não tente fazer cadastros indevidos!.'
+                'error' => 'O KM inicial informado não corresponde ao KM atual do veículo. Por favor, verifique e tente novamente.'
             ], 422);
         }
-        Viagem::create($request->all());
-
-        return response()->json(['success' => 'Viagem cadastrada com sucesso']);
+    
+        $viagem = Viagem::create([
+            'veiculo_id' => $request->veiculo_id,
+            'km_inicio' => $request->km_inicio,
+            'data_hora_inicio' => Carbon::parse($request->data_hora_inicio),
+            'data_hora_fim' => Carbon::parse($request->data_hora_fim),
+            'status' => 'AGUARDANDO INICIO',
+        ]);
+    
+        $motoristasArray = [];
+        foreach ($request->motoristas as $motorista) {
+            $motoristasArray[$motorista['id']] = ['tipo_motorista' => $motorista['tipo']];
+        }
+    
+        $viagem->motoristas()->attach($motoristasArray);
+        return response()->json(['success' => 'Viagem cadastrada com sucesso!', 'viagem' => $viagem->load('motoristas')], 201);
+        
     }
+    
     public function edit($id)
     {
         $viagem = Viagem::findOrFail($id);
-        $motoristasDisponiveis = Motorista::whereDoesntHave('viagens', function ($query) {
-            $query->where('status', 'EM ANDAMENTO');
-        })->get();
-        $veiculosDisponiveis = Veiculo::whereDoesntHave('viagens', function ($query) {
-            $query->where('status', 'EM ANDAMENTO');
-        })->get();
+
         if ($viagem->status !== 'AGUARDANDO INICIO') {
             return response()->json(['error' => 'Apenas viagens "AGUARDANDO INICIO" podem ser editadas.'], 422);
         }
+
+        $motoristasDisponiveis = Motorista::whereDoesntHave('viagens', function ($query) {
+            $query->where('status', 'EM ANDAMENTO');
+        })->orWhereHas('viagens', function ($query) use ($viagem) {
+            $query->where('id', $viagem->id);
+        })->get();
+
+        $veiculosDisponiveis = Veiculo::whereDoesntHave('viagens', function ($query) {
+            $query->where('status', 'EM ANDAMENTO');
+        })->orWhereHas('viagens', function ($query) use ($viagem) {
+            $query->where('id', $viagem->id);
+        })->get();
+
         return view('viagens.edit', compact('veiculosDisponiveis', 'motoristasDisponiveis', 'viagem'));
     }
     public function iniciar($id)
@@ -141,28 +173,33 @@ class ViagemController extends Controller
 
         $request->validate([
             'veiculo_id' => 'required|exists:veiculos,id',
-            'motorista_id' => 'required|exists:motoristas,id',
-            'motorista_id_2' => 'nullable|exists:motoristas,id|different:motorista_id',
+            'motoristas' => 'sometimes|array',
+            'motoristas.*' => 'exists:motoristas,id',
             'km_inicio' => 'required|numeric|min:0',
             'data_hora_inicio' => 'required|date',
             'data_hora_fim' => 'required|date|after:data_hora_inicio',
         ], [
-            'motorista_id_2.different' => 'oi',
             'data_hora_fim.after' => 'A data/hora de fim deve ser posterior a data/hora de inicio.'
         ]);
 
-        $viagem->update($request->all());
+        $viagem->update($request->only(['veiculo_id', 'km_inicio', 'data_hora_inicio', 'data_hora_fim', 'status']));
+        if ($request->has('motoristas')) {
+            $viagem->motoristas()->sync($request->motoristas);
+        }
 
-        return response()->json(['success' => 'Viagem atualizada com sucesso']);
+        return response()->json(['success' => 'Viagem atualizada com sucesso', 'viagem' => $viagem->load('motoristas')]);
     }
     public function destroy($id)
     {
-
         $viagem = Viagem::findOrFail($id);
+
         if ($viagem->status !== 'AGUARDANDO INICIO') {
-            return response()->json(['error' => 'Apenas viagens "AGUARDANDO INICIO" podem ser excluidas.'], 422);
+            return response()->json(['error' => 'Apenas viagens "AGUARDANDO INICIO" podem ser excluídas.'], 422);
         }
+
+        $viagem->motoristas()->detach();
         $viagem->delete();
-        return response()->json(['success' => 'Viagem excluida com sucesso']);
+
+        return response()->json(['success' => 'Viagem excluída com sucesso']);
     }
 }

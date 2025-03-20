@@ -15,31 +15,30 @@
         <h1 class="text-center">Editar Viagem</h1>
 
         <div class="card p-4 mt-3">
-        <form id="viagemForm" data-id="{{ $viagem->id }}">
+            <form id="viagemForm" data-id="{{ $viagem->id }}">
                 <div class="mb-3">
-                    <label for="motorista" class="form-label">Motorista</label>
-                    <select class="form-control" id="motorista" name="motorista_id" required>
-                        <option value="">Selecione um motorista</option>
-                        @foreach ($motoristasDisponiveis as $motorista)
-                            <option value="{{ $motorista->id }}"
-                                {{ $viagem->motorista_id == $motorista->id ? 'selected' : '' }}>
-                                {{ $motorista->nome }}
-                            </option>
+                    <label class="form-label">Motoristas</label>
+                    <div class="border p-3 rounded">
+                        @foreach($motoristasDisponiveis as $motorista)
+                            @php
+                                $motoristaAssociado = $viagem->motoristas->contains($motorista->id);
+                                $tipoMotorista = $motoristaAssociado ? $viagem->motoristas->where('id', $motorista->id)->first()->pivot->tipo_motorista : '';
+                            @endphp
+                            <div class="d-flex align-items-center mb-2">
+                                <input type="checkbox" class="motorista-checkbox me-2" value="{{ $motorista->id }}"
+                                    {{ $motoristaAssociado ? 'checked' : '' }}>
+                                <label class="me-2">{{ $motorista->nome }}</label>
+                                <select class="form-control form-control-sm tipo-motorista"
+                                    {{ !$motoristaAssociado ? 'disabled' : '' }}>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Principal" {{ $tipoMotorista === 'Principal' ? 'selected' : '' }}>Principal</option>
+                                    <option value="Auxiliar" {{ $tipoMotorista === 'Auxiliar' ? 'selected' : '' }}>Auxiliar</option>
+                                </select>
+                            </div>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="motorista2" class="form-label">Motorista 2 (Opcional)</label>
-                    <select class="form-control" id="motorista2" name="motorista_id_2">
-                        <option value="">Selecione um segundo motorista</option>
-                        @foreach ($motoristasDisponiveis as $motorista)
-                            <option value="{{ $motorista->id }}" 
-                                {{ $viagem->motorista_id_2 == $motorista->id ? 'selected' : '' }}>
-                                {{ $motorista->nome }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+
                 <div class="mb-3">
                     <label for="veiculo" class="form-label">Veículo</label>
                     <select class="form-control" id="veiculo" name="veiculo_id" required>
@@ -62,13 +61,13 @@
                 <div class="mb-3">
                     <label for="data_hora_inicio" class="form-label">Data e Hora de Início</label>
                     <input type="datetime-local" class="form-control" id="data_hora_inicio" name="data_hora_inicio"
-                        required value="{{ $viagem->data_hora_inicio_iso }}">
+                        required value="{{ $viagem->data_hora_inicio }}">
                 </div>
 
                 <div class="mb-3">
                     <label for="data_hora_fim" class="form-label">Data e Hora de Fim</label>
                     <input type="datetime-local" class="form-control" id="data_hora_fim" name="data_hora_fim" required
-                        value="{{ $viagem->data_hora_fim_iso }}">
+                        value="{{ $viagem->data_hora_fim }}">
                 </div>
 
                 <button type="submit" class="btn btn-success">Salvar Alterações</button>
@@ -76,12 +75,9 @@
             </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/viagens.js') }}"></script>
-
 
 </body>
 

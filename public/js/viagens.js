@@ -163,6 +163,15 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     } if (currentPath.includes("viagens/edit")) {
+        document.querySelectorAll(".motorista-checkbox").forEach(checkbox => {
+            checkbox.addEventListener("change", function () {
+                let tipoSelect = this.nextElementSibling.nextElementSibling;
+                tipoSelect.disabled = !this.checked;
+                if (!this.checked) {
+                    tipoSelect.value = "";
+                }
+            });
+        });
         let veiculoSelect = document.getElementById("veiculo");
         let kmInicioInput = document.getElementById("km_inicio");
 
@@ -182,7 +191,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 formData.append("_method", "PUT");
                 let viagemId = document.getElementById("viagemForm").getAttribute("data-id");
                 console.log("ID da viagem a ser editada:", viagemId);
-
+                let motoristasSelecionados = Array.from(document.querySelectorAll(".motorista-checkbox:checked"))
+                    .map(checkbox => checkbox.value);
+                formData.append("motoristas", JSON.stringify(motoristasSelecionados));
                 fetch(`/viagens/${viagemId}`, {
                     method: "POST",
                     headers: {
@@ -210,6 +221,19 @@ document.addEventListener("DOMContentLoaded", function () {
                         Swal.fire("Erro!", "Ocorreu um problema ao atualizar a viagem.", "error");
                     });
             });
+            let viagemId = viagemForm.getAttribute("data-id");
+            fetch(`/viagens/${viagemId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.motoristas) {
+                        data.motoristas.forEach(motorista => {
+                            let checkbox = document.querySelector(`.motorista-checkbox[value="${motorista.id}"]`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                            }
+                        });
+                    }
+                });
         }
     } if (currentPath.includes("viagens/create")) {
         let veiculoSelect = document.getElementById("veiculo");
@@ -228,13 +252,26 @@ document.addEventListener("DOMContentLoaded", function () {
             viagemForm.addEventListener("submit", function (event) {
                 event.preventDefault();
 
-                let motorista_id = document.getElementById("motorista").value;
-                let motorista_id_2 = document.getElementById("motorista2").value;
+                let motoristasSelecionados = [];
+
+                document.querySelectorAll(".motorista-checkbox:checked").forEach(checkbox => {
+                    let motoristaId = checkbox.value;
+                    let tipoMotorista = checkbox.nextElementSibling.nextElementSibling.value;
+
+                    if (tipoMotorista !== "") {
+                        motoristasSelecionados.push({ id: motoristaId, tipo: tipoMotorista });
+                    }
+                });
+                if (motoristasSelecionados.length === 0) {
+                    Swal.fire("Erro!", "Selecione pelo menos um motorista e defina o tipo.", "error");
+                    return;
+                }
                 let veiculo_id = document.getElementById("veiculo").value;
                 let km_inicio = document.getElementById("km_inicio").value;
                 let data_hora_inicio = document.getElementById("data_hora_inicio").value;
                 let data_hora_fim = document.getElementById("data_hora_fim").value;
 
+                console.log(motoristasSelecionados)
                 fetch("/viagens/store", {
                     method: "POST",
                     headers: {
@@ -242,8 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        motorista_id: motorista_id,
-                        motorista_id_2: motorista_id_2 || null,
+                        motoristas: motoristasSelecionados,
                         veiculo_id: veiculo_id,
                         km_inicio: km_inicio,
                         data_hora_inicio: data_hora_inicio,
@@ -255,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         body: data
                     })))
                     .then(({ status, body }) => {
-                        if (status === 200) {
+                        if (status === 200 || 201) {
                             Swal.fire("Sucesso!", body.success, "success").then(() => {
                                 window.location.href = "/viagens";
                             });
